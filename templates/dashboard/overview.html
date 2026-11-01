@@ -1,0 +1,166 @@
+{% extends "dashboard/layout.html" %}
+
+{% block page_title %}Security Resilience Overview{% endblock %}
+
+{% block dashboard_content %}
+<!-- Key Performance Indicators -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-label">Phish-Prone Click Rate</span>
+            <span class="badge badge-danger">Vulnerability</span>
+        </div>
+        <div class="metric-value" data-counter="{{ metrics.phish_prone_rate }}" data-decimals="1" data-suffix="%">
+            {{ metrics.phish_prone_rate }}%
+        </div>
+        <div class="metric-sub">{{ metrics.total_clicked }} of {{ metrics.total_sent }} simulation targets clicked</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-label">Threat Reporting Rate</span>
+            <span class="badge badge-success">Defense Layer</span>
+        </div>
+        <div class="metric-value" data-counter="{{ metrics.report_rate }}" data-decimals="1" data-suffix="%">
+            {{ metrics.report_rate }}%
+        </div>
+        <div class="metric-sub">{{ metrics.total_reported }} simulations proactively reported</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-label">Training Completion</span>
+            <span class="badge badge-primary">Education</span>
+        </div>
+        <div class="metric-value" data-counter="{{ metrics.training_rate }}" data-decimals="1" data-suffix="%">
+            {{ metrics.training_rate }}%
+        </div>
+        <div class="metric-sub">{{ metrics.total_trained }} participants completed awareness quizzes</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-label">Human Resilience Index</span>
+            <span class="badge badge-subtle">Health Score</span>
+        </div>
+        <div class="metric-value" data-counter="{{ metrics.resilience_score }}" data-suffix="/100">
+            {{ metrics.resilience_score }}/100
+        </div>
+        <div class="metric-sub">Weighted defensive posture benchmark</div>
+    </div>
+</div>
+
+<!-- Two-Column Layout: Campaigns + Live Feed -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start;">
+    <!-- Active Campaigns Card -->
+    <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+            <div>
+                <h3 style="font-size: 1.125rem;">Simulation Campaigns</h3>
+                <p style="font-size: 0.8125rem; color: var(--text-secondary);">Currently running and recent educational drills</p>
+            </div>
+            <a href="{{ url_for('dashboard.campaigns') }}" class="btn btn-primary btn-sm">
+                + New Campaign
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Campaign Name</th>
+                        <th>Template</th>
+                        <th>Status</th>
+                        <th>Targets</th>
+                        <th>Clicked</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in recent_campaigns %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-primary);">{{ c.name }}</strong>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Target: {{ c.department_target }}</div>
+                        </td>
+                        <td><span class="badge badge-subtle">{{ c.template_name }}</span></td>
+                        <td>
+                            <span class="badge {% if c.status == 'Active' %}badge-primary{% elif c.status == 'Completed' %}badge-success{% else %}badge-warning{% endif %}">
+                                {{ c.status }}
+                            </span>
+                        </td>
+                        <td>{{ c.target_count }}</td>
+                        <td>
+                            <span style="color: {% if c.clicked_count > 0 %}var(--danger){% else %}var(--text-muted){% endif %}; font-weight: 600;">
+                                {{ c.clicked_count }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('dashboard.campaign_detail', campaign_id=c.id) }}" class="btn btn-outline btn-sm">
+                                View Telemetry
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No campaigns found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Live Telemetry Activity Feed -->
+    <div class="card">
+        <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.125rem;">Safe Interaction Feed</h3>
+            <p style="font-size: 0.8125rem; color: var(--text-secondary);">Live events with zero credential logging</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.875rem;">
+            {% for event in recent_events %}
+            <div style="display: flex; align-items: flex-start; gap: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle);">
+                <div style="width: 24px; height: 24px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+                     background-color: {% if event.event_type == 'phish_reported' %}var(--success-subtle){% elif event.event_type == 'link_clicked' %}var(--danger-subtle){% elif event.event_type == 'quiz_completed' %}var(--accent-subtle){% else %}var(--bg-surface-subtle){% endif %};
+                     color: {% if event.event_type == 'phish_reported' %}var(--success){% elif event.event_type == 'link_clicked' %}var(--danger){% elif event.event_type == 'quiz_completed' %}var(--accent-primary){% else %}var(--text-secondary){% endif %};">
+                    {% if event.event_type == 'phish_reported' %}
+                        🛡️
+                    {% elif event.event_type == 'link_clicked' %}
+                        ⚠️
+                    {% elif event.event_type == 'quiz_completed' %}
+                        🎓
+                    {% else %}
+                        ✉️
+                    {% endif %}
+                </div>
+                <div style="flex: 1; font-size: 0.8125rem;">
+                    <div>
+                        <strong>{{ event.first_name }} {{ event.last_name }}</strong>
+                        <span style="color: var(--text-muted);">({{ event.department }})</span>
+                    </div>
+                    <div style="color: var(--text-secondary); margin-top: 0.125rem;">
+                        {% if event.event_type == 'phish_reported' %}
+                            Reported suspicious simulation email
+                        {% elif event.event_type == 'link_clicked' %}
+                            Clicked link & guided to teachable moment
+                        {% elif event.event_type == 'quiz_completed' %}
+                            Passed awareness quiz
+                        {% elif event.event_type == 'email_preview' %}
+                            Opened drill email preview
+                        {% else %}
+                            Delivered simulated email
+                        {% endif %}
+                    </div>
+                    <div style="font-size: 0.6875rem; color: var(--text-muted); margin-top: 0.25rem;">
+                        {{ event.campaign_name }}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No recent interaction events.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

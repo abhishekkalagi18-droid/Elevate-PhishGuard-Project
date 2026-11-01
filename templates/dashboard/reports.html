@@ -1,0 +1,145 @@
+{% extends "dashboard/layout.html" %}
+
+{% block page_title %}Executive Security Assessment Report{% endblock %}
+
+{% block dashboard_content %}
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h2 style="font-size: 1.35rem;">Executive Awareness Assessment</h2>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">Comprehensive audit report suitable for CISO reviews, compliance, and board presentations</p>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+        <a href="{{ url_for('dashboard.export_csv') }}" class="btn btn-secondary btn-sm">
+            Export Audit CSV
+        </a>
+        <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">
+            Print / PDF Report
+        </button>
+    </div>
+</div>
+
+<div class="card" style="padding: 2.5rem; margin-bottom: 2rem;">
+    <!-- Report Header -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border-subtle); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.25rem; color: var(--text-primary); margin-bottom: 0.25rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>PhishGuard Enterprise Resilience Report</span>
+            </div>
+            <div style="font-size: 0.8125rem; color: var(--text-muted);">
+                Generated: {{ now.strftime('%B %d, %Y - %H:%M UTC') }} &nbsp;•&nbsp; Scope: Enterprise Cohort
+            </div>
+        </div>
+
+        <div style="text-align: right;">
+            <span class="badge badge-success" style="font-size: 0.75rem;">Status: SOC2 / ISO-27001 Aligned</span>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.375rem;">Classification: Strictly Internal</div>
+        </div>
+    </div>
+
+    <!-- Executive KPI Summary -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2.5rem;">
+        <div style="padding: 1.25rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md); text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Resilience Benchmark</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-top: 0.25rem;">{{ metrics.resilience_score }}/100</div>
+            <div style="font-size: 0.7rem; color: var(--success); font-weight: 600;">Upper Quartile</div>
+        </div>
+
+        <div style="padding: 1.25rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md); text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Phish-Prone Vulnerability</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--danger); margin-top: 0.25rem;">{{ metrics.phish_prone_rate }}%</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted);">Industry Avg: 34.3%</div>
+        </div>
+
+        <div style="padding: 1.25rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md); text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Threat Reporting Velocity</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--success); margin-top: 0.25rem;">{{ metrics.report_rate }}%</div>
+            <div style="font-size: 0.7rem; color: var(--success); font-weight: 600;">+38% Year-over-Year</div>
+        </div>
+
+        <div style="padding: 1.25rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md); text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Training Completed</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--accent-primary); margin-top: 0.25rem;">{{ metrics.training_rate }}%</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted);">Remediation Rate</div>
+        </div>
+    </div>
+
+    <!-- Department Risk Matrix -->
+    <div style="margin-bottom: 2.5rem;">
+        <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Departmental Risk Exposure Matrix</h3>
+        <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Comparative analysis of click vulnerability against proactive reporting across functional teams:
+        </p>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Participants Tested</th>
+                        <th>Simulated Clicks</th>
+                        <th>Threat Reports</th>
+                        <th>Click Vulnerability</th>
+                        <th>Defense Posture</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in dept_breakdown %}
+                    <tr>
+                        <td><strong>{{ d.department }}</strong></td>
+                        <td>{{ d.total_sent }}</td>
+                        <td><span style="color: var(--danger); font-weight: 600;">{{ d.clicked_count }}</span></td>
+                        <td><span style="color: var(--success); font-weight: 600;">{{ d.reported_count }}</span></td>
+                        <td>{{ d.click_rate }}%</td>
+                        <td>
+                            <span class="badge {% if d.report_rate >= 40 %}badge-success{% elif d.report_rate >= 20 %}badge-warning{% else %}badge-danger{% endif %}">
+                                {% if d.report_rate >= 40 %}Resilient{% elif d.report_rate >= 20 %}Moderate{% else %}Elevated Risk{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Campaign Execution History -->
+    <div>
+        <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Historical Drill Summary</h3>
+        <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">Telemetry results recorded during previous simulation cycles</p>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Drill Identifier</th>
+                        <th>Status</th>
+                        <th>Execution Date</th>
+                        <th>Targets</th>
+                        <th>Clicks</th>
+                        <th>Reports</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in campaigns %}
+                    <tr>
+                        <td><strong>{{ c.name }}</strong></td>
+                        <td>
+                            <span class="badge {% if c.status == 'Active' %}badge-primary{% elif c.status == 'Completed' %}badge-success{% else %}badge-warning{% endif %}">
+                                {{ c.status }}
+                            </span>
+                        </td>
+                        <td style="font-size: 0.8125rem; color: var(--text-muted);">{{ c.started_at or 'N/A' }}</td>
+                        <td>{{ c.target_count }}</td>
+                        <td><span style="color: var(--danger); font-weight: 600;">{{ c.clicked or 0 }}</span></td>
+                        <td><span style="color: var(--success); font-weight: 600;">{{ c.reported or 0 }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

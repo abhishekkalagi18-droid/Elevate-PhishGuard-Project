@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/training.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="simulation-body">
+    <!-- Top Interactive Helper Banner -->
+    <div style="max-width: 900px; width: 100%; margin-bottom: 1.25rem;">
+        <div class="alert alert-info" style="margin-bottom: 0;">
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                    <strong>Interactive In-Browser Simulation Client</strong>
+                    <div style="font-size: 0.75rem; margin-top: 0.25rem;">
+                        Target: <code>{{ target.recipient_email }}</code> ({{ target.first_name }} {{ target.last_name }}) &nbsp;•&nbsp; Drill: {{ target.campaign_name }}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" class="theme-toggle-btn" aria-label="Toggle theme"></button>
+                    <a href="{{ url_for('dashboard.campaign_detail', campaign_id=target.campaign_id) }}" class="btn btn-secondary btn-sm">← Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulated Email Window Frame -->
+    <div class="mail-client-window">
+        <div class="mail-client-topbar">
+            <div class="mail-window-controls">
+                <div class="window-dot dot-red"></div>
+                <div class="window-dot dot-yellow"></div>
+                <div class="window-dot dot-green"></div>
+                <span class="mail-client-title" style="margin-left: 0.5rem;">Enterprise Webmail (Simulated View)</span>
+            </div>
+
+            <div class="mail-client-actions">
+                <!-- Report Phishing Button -->
+                <form method="POST" action="{{ url_for('simulation.record_report', token=token) }}" style="margin: 0;">
+                    <button type="submit" class="btn btn-success btn-sm" title="Report this suspicious message to Security Operations">
+                        🛡️ Report Phishing
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="mail-header-info">
+            <div class="mail-subject">{{ target.subject }}</div>
+            <div class="mail-meta-row">
+                <div>
+                    <span class="mail-meta-label">From:</span>
+                    <strong>{{ target.sender_name }}</strong> &lt;{{ target.sender_email }}&gt;
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                    Today, 09:42 AM
+                </div>
+            </div>
+            <div class="mail-meta-row" style="margin-top: 0.25rem;">
+                <div>
+                    <span class="mail-meta-label">To:</span>
+                    {{ target.first_name }} {{ target.last_name }} &lt;{{ target.recipient_email }}&gt;
+                </div>
+            </div>
+        </div>
+
+        <!-- Rendered Email Content -->
+        <div class="mail-content-area">
+            {{ rendered_body|safe }}
+        </div>
+    </div>
+
+    <!-- Red Flag Hint Drawer (for educational evaluation) -->
+    <div class="card" style="max-width: 900px; width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <h4 style="font-size: 0.95rem; margin: 0;">Educational Red Flag Indicators in this Drill:</h4>
+            <span class="badge badge-subtle">Difficulty: {{ target.difficulty }}</span>
+        </div>
+        <ul style="padding-left: 1.25rem; font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.6;">
+            {% for flag in red_flags_list %}
+            <li>{{ flag }}</li>
+            {% endfor %}
+        </ul>
+        <div style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted);">
+            Testing tip: Click the action link inside the email body above to test how PhishGuard intercepts clicks and guides participants through the teachable moment!
+        </div>
+    </div>
+</div>
+{% endblock %}

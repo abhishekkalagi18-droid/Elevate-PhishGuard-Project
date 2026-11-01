@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/training.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="simulation-body" style="justify-content: center;">
+    <div style="position: absolute; top: 1.5rem; right: 1.5rem;">
+        <button type="button" class="theme-toggle-btn" aria-label="Toggle theme"></button>
+    </div>
+
+    <div class="card" style="max-width: 580px; width: 100%; text-align: center; padding: 3rem 2rem;">
+        <div style="width: 72px; height: 72px; border-radius: var(--radius-full); background: var(--success-subtle); color: var(--success); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+            </svg>
+        </div>
+
+        <span class="badge badge-success" style="margin-bottom: 0.75rem;">Simulated Threat Successfully Identified</span>
+        <h1 style="font-size: 1.875rem; margin-bottom: 0.75rem;">Outstanding Reflexes!</h1>
+        <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Thank you, <strong>{{ target.first_name }}</strong>. You caught a simulated phishing scenario and safely forwarded it to Security Operations instead of interacting with untrusted elements.
+        </p>
+
+        <div style="background: var(--bg-surface-subtle); padding: 1.25rem; border-radius: var(--radius-md); text-align: left; margin-bottom: 2rem; font-size: 0.875rem;">
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Why reporting matters:</div>
+            <p style="color: var(--text-secondary); margin: 0; font-size: 0.8125rem;">
+                When an employee reports a suspicious message within 5 minutes, Security Operations can automatically quarantine matching messages across the entire corporate directory before others are impacted.
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+            <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary">
+                Return to Lab Dashboard
+            </a>
+            <a href="/" class="btn btn-secondary">
+                Public Overview
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

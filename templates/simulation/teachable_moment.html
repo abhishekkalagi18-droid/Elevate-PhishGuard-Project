@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/training.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="simulation-body">
+    <div style="position: absolute; top: 1.5rem; right: 1.5rem;">
+        <button type="button" class="theme-toggle-btn" aria-label="Toggle theme"></button>
+    </div>
+
+    <div class="teachable-container">
+        <!-- Reassuring Header Card -->
+        <div class="teachable-header-card">
+            <div class="teachable-shield-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+            </div>
+            <div style="margin-bottom: 0.5rem;">
+                <span class="badge badge-primary">Authorized Security Drill • Safe Teachable Moment</span>
+            </div>
+            <h1 class="teachable-title">Take a breath — you're completely safe.</h1>
+            <p class="teachable-subtitle">
+                The link you just clicked was part of a routine ethical phishing drill conducted by your organization's Security Team.
+                <strong>No passwords, session tokens, or personal information were collected.</strong>
+            </p>
+        </div>
+
+        <!-- Red Flags Analysis Card -->
+        <div class="red-flags-card">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">How could you tell this was simulated?</h2>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                Real-world cyber threats use psychological tricks to bypass critical thinking. Here are the red flags present in this message:
+            </p>
+
+            <div>
+                {% for flag in red_flags %}
+                <div class="red-flag-item">
+                    <div class="flag-badge">{{ loop.index }}</div>
+                    <div>
+                        <strong style="font-size: 0.95rem; color: var(--text-primary);">{{ flag }}</strong>
+                        <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            Attackers rely on emotional momentum. Pausing for 5 seconds to inspect addresses prevents 95% of compromises.
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if target.educational_tip %}
+            <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-surface-subtle); border-radius: var(--radius-md); border-left: 3px solid var(--accent-primary);">
+                <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Security Pro Tip:</div>
+                <div style="font-size: 0.875rem; color: var(--text-primary); margin-top: 0.25rem;">
+                    {{ target.educational_tip }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 3-Question Micro-Quiz -->
+        <div class="quiz-card">
+            <div style="margin-bottom: 1.5rem;">
+                <span class="badge badge-subtle" style="margin-bottom: 0.5rem;">Quick Knowledge Reinforcement</span>
+                <h2 style="font-size: 1.25rem;">3-Minute Micro-Quiz</h2>
+                <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                    Solidify what you've learned to reset your risk score and claim your PhishGuard Resilience Badge.
+                </p>
+            </div>
+
+            <form method="POST" action="{{ url_for('simulation.submit_quiz', token=token) }}">
+                {% for q in quiz_questions %}
+                <div class="question-block">
+                    <div class="question-text">
+                        {{ loop.index }}. {{ q.question }}
+                    </div>
+                    <div>
+                        {% for opt in q.options %}
+                        <label class="option-label">
+                            <input type="radio" name="q{{ q.id }}" value="{{ loop.index0 }}" required>
+                            <span class="option-text">{{ opt }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary btn-lg" style="padding: 0.875rem 2rem; font-size: 1rem;">
+                        Submit Answers & Claim Certificate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

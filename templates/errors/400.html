@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="landing-wrapper" style="justify-content: center; align-items: center; text-align: center; padding: 2rem;">
+    <div class="card" style="max-width: 480px; width: 100%; padding: 3rem 2rem;">
+        <span class="badge badge-danger" style="margin-bottom: 1rem;">Notice</span>
+        <h1 style="font-size: 2rem; margin-bottom: 0.75rem;">Request Error</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            {{ description or 'An unexpected condition occurred processing this simulation request.' }}
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+            <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+            <a href="/" class="btn btn-primary">Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="landing-wrapper" style="justify-content: center; align-items: center; text-align: center; padding: 2rem;">
+    <div class="card" style="max-width: 480px; width: 100%; padding: 3rem 2rem;">
+        <span class="badge badge-danger" style="margin-bottom: 1rem;">Status 500</span>
+        <h1 style="font-size: 2rem; margin-bottom: 0.75rem;">Internal Error</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            An internal server error occurred while processing this simulation transaction.
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+            <a href="/" class="btn btn-secondary">Landing Page</a>
+            <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary">Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

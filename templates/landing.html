@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="landing-wrapper">
+    <!-- 1. Minimal Navigation Bar -->
+    <header class="landing-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <div class="nav-brand-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <span>PhishGuard</span>
+            </a>
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#features" class="nav-link">Features</a></li>
+                    <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="#analytics-preview" class="nav-link">Analytics</a></li>
+                    <li><a href="#security" class="nav-link">Security & Privacy</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <button type="button" class="theme-toggle-btn" aria-label="Toggle visual theme">
+                    <!-- Icon replaced by theme.js -->
+                </button>
+                {% if current_user %}
+                    <a href="{{ url_for('dashboard.overview') }}" class="btn btn-secondary btn-sm">Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-sm">Sign In</a>
+                {% endif %}
+                <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary btn-sm">Launch Lab</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Hero Section -->
+    <section class="hero-section reveal-on-scroll">
+        <div class="hero-pill">
+            <span class="badge badge-primary">Ethical Security Awareness & Simulation Platform</span>
+        </div>
+        <h1 class="hero-title">Build Human Resilience Against Phishing.</h1>
+        <p class="hero-description">
+            Empower your workforce with controlled, realistic phishing simulations and immediate, positive teachable moments. Replace fear and punitive compliance with measurable, long-term defensive instincts.
+        </p>
+        <div class="hero-ctas">
+            <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary">Launch Training Lab</a>
+            <a href="#features" class="btn btn-secondary">Explore Platform</a>
+        </div>
+
+        <!-- Metric Counter Strip -->
+        <div class="hero-stats-row reveal-on-scroll stagger-1">
+            <div class="hero-stat-item">
+                <div class="hero-stat-value" data-counter="64" data-suffix="%">0%</div>
+                <div class="hero-stat-label">Click Rate Reduction</div>
+            </div>
+            <div class="hero-stat-item">
+                <div class="hero-stat-value" data-counter="4.8" data-decimals="1" data-suffix="x">0x</div>
+                <div class="hero-stat-label">Threat Reporting Ratio</div>
+            </div>
+            <div class="hero-stat-item">
+                <div class="hero-stat-value" data-counter="100" data-suffix="%">0%</div>
+                <div class="hero-stat-label">Allowlist Isolated</div>
+            </div>
+            <div class="hero-stat-item">
+                <div class="hero-stat-value" data-counter="0" data-suffix="">0</div>
+                <div class="hero-stat-label">Real Secrets Collected</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Features Section -->
+    <section id="features" class="section">
+        <div class="section-header reveal-on-scroll">
+            <span class="badge badge-subtle section-pill">Core Capabilities</span>
+            <h2 class="section-title">Designed for Ethical Enterprise Education</h2>
+            <p class="section-subtitle">A balanced architecture engineered for behavioral change, continuous measurement, and psychological safety.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card reveal-on-scroll stagger-1">
+                <div class="feature-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Campaign Orchestration</h3>
+                <p class="feature-desc">Schedule and dispatch targeted simulation drills across departments. Segment cohorts by role or baseline risk rating.</p>
+            </div>
+
+            <div class="feature-card reveal-on-scroll stagger-2">
+                <div class="feature-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Realistic Email Simulation</h3>
+                <p class="feature-desc">Library of authentic educational templates including IT renewals, invoice notices, and cloud document shares with configurable difficulty levels.</p>
+            </div>
+
+            <div class="feature-card reveal-on-scroll stagger-3">
+                <div class="feature-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"/>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Zero-Credential Telemetry</h3>
+                <p class="feature-desc">Safe interaction tracking records delivery, email preview, link interaction, and report submissions. Passwords and credentials are never captured.</p>
+            </div>
+
+            <div class="feature-card reveal-on-scroll stagger-1">
+                <div class="feature-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Behavioral Resilience Analytics</h3>
+                <p class="feature-desc">Dynamic reporting tracks Phish-Prone Percentage over time, departmental vulnerability rankings, and organizational reporting velocity.</p>
+            </div>
+
+            <div class="feature-card reveal-on-scroll stagger-2">
+                <div class="feature-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Immediate Teachable Moments</h3>
+                <p class="feature-desc">When a user clicks a simulated link, they are instantly redirected to a reassuring learning page highlighting red flags and an interactive micro-quiz.</p>
+            </div>
+
+            <div class="feature-card reveal-on-scroll stagger-3">
+                <div class="feature-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Strict Allowlist Guardrails</h3>
+                <p class="feature-desc">Engineered safeguards guarantee simulation emails can only be dispatched to pre-authorized domains, eliminating risks of accidental external leaks.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. How It Works Section -->
+    <section id="how-it-works" class="section">
+        <div class="section-header reveal-on-scroll">
+            <span class="badge badge-subtle section-pill">Operational Workflow</span>
+            <h2 class="section-title">The Four-Stage Continuous Learning Loop</h2>
+            <p class="section-subtitle">A constructive, repeatable cycle that continuously transforms employees into your primary security defense layer.</p>
+        </div>
+
+        <div class="stepper-grid">
+            <div class="step-card reveal-on-scroll stagger-1">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Curate & Authorize</h3>
+                <p class="step-desc">Define authorized internal participant groups, approve allowlist domains, and pick an educational scenario matching real-world threat intelligence.</p>
+            </div>
+
+            <div class="step-card reveal-on-scroll stagger-2">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Launch Safe Simulation</h3>
+                <p class="step-desc">Deploy the drill in pure in-browser simulation mode or route through local SMTP (Mailpit/Postfix). Each email carries a safe unique tracking token.</p>
+            </div>
+
+            <div class="step-card reveal-on-scroll stagger-3">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Measure Telemetry</h3>
+                <p class="step-desc">Observe real-time engagement: see how many participants open, click deceptive links, or proactively click the 'Report Phishing' button.</p>
+            </div>
+
+            <div class="step-card reveal-on-scroll stagger-4">
+                <div class="step-number">4</div>
+                <h3 class="step-title">Educate & Reinforce</h3>
+                <p class="step-desc">Anyone interacting with a simulation link receives immediate constructive micro-training and earns positive resilience credentials.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Analytics Preview Section -->
+    <section id="analytics-preview" class="section">
+        <div class="section-header reveal-on-scroll">
+            <span class="badge badge-subtle section-pill">Telemetry & Insights</span>
+            <h2 class="section-title">Executive Resilience Analytics Preview</h2>
+            <p class="section-subtitle">Real-time visibility into your organization's behavioral risk posture, tracked over consecutive campaign cycles.</p>
+        </div>
+
+        <div class="analytics-preview-container reveal-on-scroll">
+            <div class="preview-topbar">
+                <div class="preview-badge-group">
+                    <span class="badge badge-primary">Demonstration Data Only</span>
+                    <span style="font-size: 0.8125rem; color: var(--text-muted);">6-Month Cohort Trend Analysis</span>
+                </div>
+                <div style="font-size: 0.8125rem; color: var(--text-secondary);">
+                    Reporting Ratio: <strong style="color: var(--success);">54.8%</strong> &nbsp;|&nbsp;
+                    Click Vulnerability: <strong style="color: var(--danger);">11.6%</strong>
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <canvas id="landingPreviewChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Security and Privacy Section -->
+    <section id="security" class="section">
+        <div class="section-header reveal-on-scroll">
+            <span class="badge badge-subtle section-pill">Ethics & Privacy</span>
+            <h2 class="section-title">Built with Strict Ethical Guardrails</h2>
+            <p class="section-subtitle">Security awareness training must never compromise user privacy, breach trust, or collect genuine credentials.</p>
+        </div>
+
+        <div class="security-grid">
+            <div class="security-card reveal-on-scroll stagger-1">
+                <div class="security-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 style="font-size: 1.125rem; margin-bottom: 0.375rem;">Zero Password Harvesting</h3>
+                    <p style="font-size: 0.875rem;">PhishGuard forms never intercept or store actual passwords, authentication tokens, or session cookies. Simulated links immediately intercept and educate.</p>
+                </div>
+            </div>
+
+            <div class="security-card reveal-on-scroll stagger-2">
+                <div class="security-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="m4.93 4.93 4.24 4.24"/>
+                        <path d="m14.83 9.17 4.24-4.24"/>
+                        <path d="m14.83 14.83 4.24 4.24"/>
+                        <path d="m9.17 14.83-4.24 4.24"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 style="font-size: 1.125rem; margin-bottom: 0.375rem;">Strict Allowlist Enforcement</h3>
+                    <p style="font-size: 0.875rem;">Simulations are restricted to verified domain allowlists. The platform rejects any dispatch to unverified external mail servers or third-party targets.</p>
+                </div>
+            </div>
+
+            <div class="security-card reveal-on-scroll stagger-1">
+                <div class="security-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 style="font-size: 1.125rem; margin-bottom: 0.375rem;">Non-Punitive Education</h3>
+                    <p style="font-size: 0.875rem;">Phishing drills are not designed to shame or punish employees. Educational micro-lessons turn mistakes into low-friction learning opportunities.</p>
+                </div>
+            </div>
+
+            <div class="security-card reveal-on-scroll stagger-2">
+                <div class="security-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 style="font-size: 1.125rem; margin-bottom: 0.375rem;">Offline & Local First</h3>
+                    <p style="font-size: 0.875rem;">Run drills safely in an isolated sandbox with SQLite and local Mailpit SMTP, keeping all test telemetry strictly within your internal boundary.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Clean Minimalist Footer -->
+    <footer class="landing-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="/" class="nav-brand" style="margin-bottom: 0.75rem;">
+                    <div class="nav-brand-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <span>PhishGuard</span>
+                </a>
+                <p class="footer-desc">
+                    Enterprise-grade ethical phishing simulation platform designed for continuous resilience training and zero-credential telemetry.
+                </p>
+            </div>
+
+            <div class="footer-nav-col">
+                <div class="footer-col-title">Navigation</div>
+                <a href="#features" class="footer-link">Platform Features</a>
+                <a href="#how-it-works" class="footer-link">Simulation Process</a>
+                <a href="#analytics-preview" class="footer-link">Analytics</a>
+                <a href="#security" class="footer-link">Security Guardrails</a>
+            </div>
+
+            <div class="footer-nav-col">
+                <div class="footer-col-title">Training Lab</div>
+                <a href="{{ url_for('auth.login') }}" class="footer-link">Administrator Portal</a>
+                <a href="{{ url_for('dashboard.overview') }}" class="footer-link">Live Dashboard</a>
+                <a href="{{ url_for('dashboard.training') }}" class="footer-link">Awareness Modules</a>
+                <a href="{{ url_for('public.ethical_charter') }}" class="footer-link">Ethical Charter</a>
+            </div>
+
+            <div class="footer-nav-col">
+                <div class="footer-col-title">Environment</div>
+                <span class="badge badge-subtle" style="width: fit-content;">v{{ app_version }} • Production Ready</span>
+                <span style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.5rem;">SQLite • Flask • Chart.js</span>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>&copy; 2026 PhishGuard Platform. Built for ethical defensive security operations.</div>
+            <div>Authorized Organizational Testing Only • No Real Credentials Harvested</div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        PhishGuardCharts.initLandingChart('landingPreviewChart');
+    });
+</script>
+{% endblock %}

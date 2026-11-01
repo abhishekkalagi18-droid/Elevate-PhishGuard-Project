@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="landing-wrapper" style="justify-content: center; align-items: center; text-align: center; padding: 2rem;">
+    <div class="card" style="max-width: 480px; width: 100%; padding: 3rem 2rem;">
+        <span class="badge badge-danger" style="margin-bottom: 1rem;">Status 403 — Forbidden</span>
+        <h1 style="font-size: 2rem; margin-bottom: 0.75rem;">Access Denied</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            You do not have permission to view or execute this resource. Administrative credentials and elevated authorization are required.
+        </p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+            <a href="/" class="btn btn-secondary">Landing Page</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Admin Sign In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

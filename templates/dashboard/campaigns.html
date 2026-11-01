@@ -1,0 +1,143 @@
+{% extends "dashboard/layout.html" %}
+
+{% block page_title %}Simulation Campaigns{% endblock %}
+
+{% block dashboard_content %}
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+    <div>
+        <h2 style="font-size: 1.35rem;">Active & Historical Drills</h2>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">Manage and monitor organizational phishing awareness simulations</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-modal-target="newCampaignModal">
+        + Create Campaign
+    </button>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Campaign</th>
+                    <th>Template & Difficulty</th>
+                    <th>Mode</th>
+                    <th>Status</th>
+                    <th>Targets</th>
+                    <th>Opened</th>
+                    <th>Clicked</th>
+                    <th>Reported</th>
+                    <th>Trained</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in campaigns %}
+                <tr>
+                    <td>
+                        <strong style="color: var(--text-primary);">{{ c.name }}</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Cohort: {{ c.department_target }}</div>
+                    </td>
+                    <td>
+                        <div>{{ c.template_name }}</div>
+                        <span class="badge {% if c.difficulty == 'Low' %}badge-success{% elif c.difficulty == 'Medium' %}badge-warning{% else %}badge-danger{% endif %}" style="font-size: 0.65rem;">
+                            {{ c.difficulty }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge badge-subtle" style="font-size: 0.7rem;">{{ c.delivery_mode|upper }}</span>
+                    </td>
+                    <td>
+                        <span class="badge {% if c.status == 'Active' %}badge-primary{% elif c.status == 'Completed' %}badge-success{% else %}badge-warning{% endif %}">
+                            {{ c.status }}
+                        </span>
+                    </td>
+                    <td><strong>{{ c.total_targets }}</strong></td>
+                    <td>{{ c.opened_count }}</td>
+                    <td>
+                        <span style="color: {% if c.clicked_count > 0 %}var(--danger){% else %}var(--text-muted){% endif %}; font-weight: 600;">
+                            {{ c.clicked_count }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="color: {% if c.reported_count > 0 %}var(--success){% else %}var(--text-muted){% endif %}; font-weight: 600;">
+                            {{ c.reported_count }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="color: var(--accent-primary); font-weight: 600;">
+                            {{ c.trained_count }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('dashboard.campaign_detail', campaign_id=c.id) }}" class="btn btn-outline btn-sm">
+                            Manage
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                        No campaigns found. Click "Create Campaign" above to launch your first educational drill.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- New Campaign Modal -->
+<div id="newCampaignModal" class="modal-overlay">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">Launch Simulation Campaign</h3>
+            <button type="button" class="modal-close-btn" aria-label="Close modal">&times;</button>
+        </div>
+
+        <form method="POST" action="{{ url_for('dashboard.new_campaign') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="camp_name">Campaign Name</label>
+                    <input type="text" id="camp_name" name="name" class="form-control" placeholder="e.g. Q4 Executive Leadership Drill" required>
+                    <div class="form-help">Choose a recognizable identifier for reporting and telemetry.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="camp_template">Educational Email Template</label>
+                    <select id="camp_template" name="template_id" class="form-select" required>
+                        {% for t in templates %}
+                        <option value="{{ t.id }}">[{{ t.category }}] {{ t.name }} (Difficulty: {{ t.difficulty }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="camp_dept">Target Department Cohort</label>
+                    <select id="camp_dept" name="department_target" class="form-select">
+                        <option value="All">All Authorized Participants</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept }}">{{ dept }} Department Only</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="camp_mode">Delivery Engine</label>
+                    <select id="camp_mode" name="delivery_mode" class="form-select">
+                        <option value="simulation" selected>Simulation Only (Zero external mail needed, virtual inbox)</option>
+                        <option value="smtp">Local SMTP Server (Routes to Mailpit or local Postfix)</option>
+                    </select>
+                    <div class="form-help">Simulation mode allows instant in-browser preview without requiring SMTP servers.</div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Deploy Drill Now</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

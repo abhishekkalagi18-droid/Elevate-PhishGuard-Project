@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="landing-wrapper">
+    <header class="landing-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <div class="nav-brand-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <span>PhishGuard</span>
+            </a>
+            <div class="nav-actions">
+                <button type="button" class="theme-toggle-btn" aria-label="Toggle theme"></button>
+                <a href="/" class="btn btn-secondary btn-sm">Back to Home</a>
+                <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary btn-sm">Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="section" style="max-width: 800px; padding-top: 3rem;">
+        <span class="badge badge-primary" style="margin-bottom: 1rem;">Ethical Guidelines & Governance</span>
+        <h1 style="font-size: 2.25rem; margin-bottom: 1rem;">The PhishGuard Ethical Simulation Charter</h1>
+        <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">
+            Phishing simulations are a defensive tool designed exclusively to build human resilience. PhishGuard enforces strict non-punitive, privacy-centric standards.
+        </p>
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--accent-primary);">1. Absolute Prohibition of Real Credential Collection</h3>
+            <p>
+                PhishGuard landing pages never request, collect, store, or log actual employee passwords, multi-factor codes, API keys, or session tokens. Any user who clicks a simulated link is immediately routed to a safe teachable moment screen that clearly indicates the email was part of an internal drill.
+            </p>
+        </div>
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--accent-primary);">2. Domain Allowlisting & Target Consent</h3>
+            <p>
+                Drills are strictly restricted to corporate-owned domains configured in the authorized allowlist. Dispatches to unverified external domains are blocked at the engine level to prevent accidental harassment or spamming of third parties.
+            </p>
+        </div>
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--accent-primary);">3. Non-Punitive, Educational Philosophy</h3>
+            <p>
+                Employees who click simulated links must never be penalized, docked compensation, or subjected to public embarrassment. Simulations serve to uncover systemic vulnerabilities and train pattern-recognition in a constructive, supportive environment.
+            </p>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--accent-primary);">4. Data Minimization & Privacy Protection</h3>
+            <p>
+                Interaction telemetry is limited to operational timestamps (opened, clicked, reported, trained) and synthetic risk calculations. Personal device files, external web history, or unauthorized trackers are never queried or recorded.
+            </p>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary">Return to Administrative Lab</a>
+        </div>
+    </main>
+</div>
+{% endblock %}

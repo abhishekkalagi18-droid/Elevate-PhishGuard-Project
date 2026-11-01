@@ -1,0 +1,272 @@
+{% extends "dashboard/layout.html" %}
+
+{% block page_title %}Authorized Participants & Allowlists
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-edit-domain]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const form = document.getElementById('editDomainForm');
+            const domainInput = document.getElementById('edit_d_name');
+            const descriptionInput = document.getElementById('edit_d_desc');
+            if (!form || !domainInput || !descriptionInput) return;
+
+            form.action = '/dashboard/participants/allowlist/' +
+                encodeURIComponent(button.dataset.id) + '/edit';
+            domainInput.value = button.dataset.domain || '';
+            descriptionInput.value = button.dataset.description || '';
+        });
+    });
+});
+</script>
+
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- Allowlist Security Notice Banner -->
+<div class="alert alert-info" style="margin-bottom: 1.5rem;">
+    <div>
+        <strong>Strict Allowlist Protection Active:</strong>
+        Simulation emails and target assignments are strictly restricted to verified organizational domains to prevent unauthorized dispatches.
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start;">
+    <!-- Participants Table -->
+    <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+            <div>
+                <h3 style="font-size: 1.125rem;">Authorized Test Cohort</h3>
+                <p style="font-size: 0.8125rem; color: var(--text-secondary);">Enrolled team members authorized for simulated training</p>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" data-modal-target="addParticipantModal">
+                + Add Participant
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Participant</th>
+                        <th>Department</th>
+                        <th>Risk Score</th>
+                        <th>Simulations</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in participants %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-primary);">{{ p.first_name }} {{ p.last_name }}</strong>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ p.email }}</div>
+                        </td>
+                        <td><span class="badge badge-subtle">{{ p.department }}</span></td>
+                        <td>
+                            <span class="risk-pill {% if p.risk_score <= 25 %}risk-low{% elif p.risk_score <= 50 %}risk-medium{% else %}risk-high{% endif %}">
+                                {{ p.risk_score }} / 100
+                            </span>
+                        </td>
+                        <td style="font-size: 0.8125rem;">
+                            {{ p.total_drills }} drills
+                            <span style="color: var(--text-muted); font-size: 0.75rem;">
+                                ({{ p.drills_clicked }} clicked, {{ p.drills_reported }} reported)
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-success" style="font-size: 0.7rem;">Authorized</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No participants enrolled.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Allowlist Domains Section -->
+    <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+            <div>
+                <h3 style="font-size: 1.125rem;">Approved Domains</h3>
+                <p style="font-size: 0.8125rem; color: var(--text-secondary);">Boundary allowlist for simulation delivery</p>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" data-modal-target="addDomainModal">
+                + Add
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in allowlist %}
+                    <tr>
+                        <td><strong style="font-family: var(--font-mono);">@{{ d.domain }}</strong></td>
+                        <td>{{ d.description or 'Authorized testing domain' }}</td>
+                        <td style="white-space: nowrap;">
+                            <button type="button" class="btn btn-secondary btn-sm"
+                                data-edit-domain
+                                data-modal-target="editDomainModal"
+                                data-id="{{ d.id }}"
+                                data-domain="{{ d.domain }}"
+                                data-description="{{ d.description or '' }}">Edit</button>
+                            <form method="POST" action="{{ url_for('dashboard.delete_allowlist_domain', domain_id=d.id) }}"
+                                  style="display: inline;"
+                                  onsubmit="return confirm('Delete the approved domain @{{ d.domain }}? This will prevent future simulations to this domain.');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No approved domains configured.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Participant Modal -->
+<div id="addParticipantModal" class="modal-overlay">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">Enroll Authorized Participant</h3>
+            <button type="button" class="modal-close-btn">&times;</button>
+        </div>
+
+        <form method="POST" action="{{ url_for('dashboard.add_participant') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="p_fname">First Name</label>
+                        <input type="text" id="p_fname" name="first_name" class="form-control" placeholder="Jane" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="p_lname">Last Name</label>
+                        <input type="text" id="p_lname" name="last_name" class="form-control" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="p_email">Corporate Email Address</label>
+                    <input type="email" id="p_email" name="email" class="form-control" placeholder="jane.doe@company.internal" required>
+                    <div class="form-help">Must match an approved domain (e.g. <code>@company.internal</code>, <code>@example.com</code>).</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="p_dept">Department</label>
+                    <select id="p_dept" name="department" class="form-select">
+                        <option value="Engineering">Engineering</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Legal">Legal</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Executive">Executive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Authorize & Enroll</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Domain Modal -->
+<div id="editDomainModal" class="modal-overlay">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Approved Domain</h3>
+            <button type="button" class="modal-close-btn">&times;</button>
+        </div>
+        <form id="editDomainForm" method="POST" action="#">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="edit_d_name">Domain Name</label>
+                    <input type="text" id="edit_d_name" name="domain" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="edit_d_desc">Description / Purpose</label>
+                    <input type="text" id="edit_d_desc" name="description" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Domain Modal -->
+<div id="addDomainModal" class="modal-overlay">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Approved Test Domain</h3>
+            <button type="button" class="modal-close-btn">&times;</button>
+        </div>
+
+        <form method="POST" action="{{ url_for('dashboard.add_allowlist_domain') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="d_name">Domain Name</label>
+                    <input type="text" id="d_name" name="domain" class="form-control" placeholder="internal.org" required>
+                    <div class="form-help">Do not include the '@' symbol. Example: <code>corporate.local</code>.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="d_desc">Description / Purpose</label>
+                    <input type="text" id="d_desc" name="description" class="form-control" placeholder="Staging environment sandbox">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add to Allowlist</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-edit-domain]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const form = document.getElementById('editDomainForm');
+            const domainInput = document.getElementById('edit_d_name');
+            const descriptionInput = document.getElementById('edit_d_desc');
+            if (!form || !domainInput || !descriptionInput) return;
+
+            form.action = '/dashboard/participants/allowlist/' +
+                encodeURIComponent(button.dataset.id) + '/edit';
+            domainInput.value = button.dataset.domain || '';
+            descriptionInput.value = button.dataset.description || '';
+        });
+    });
+});
+</script>
+
+{% endblock %}

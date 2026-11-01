@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/training.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="simulation-body">
+    <div style="position: absolute; top: 1.5rem; right: 1.5rem;">
+        <button type="button" class="theme-toggle-btn" aria-label="Toggle theme"></button>
+    </div>
+
+    <div class="certificate-container">
+        <div class="certificate-seal">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+            </svg>
+        </div>
+
+        <div style="font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em;">
+            Certificate of Security Awareness
+        </div>
+
+        <h1 class="certificate-title">Human Resilience Verified</h1>
+        <p style="font-size: 0.95rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto;">
+            This certifies that the following team member has completed the targeted phishing recognition and mitigation training:
+        </p>
+
+        <div class="certificate-name">
+            {{ target.first_name }} {{ target.last_name }}
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0; font-size: 0.875rem;">
+            <div>
+                <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Assessment Score</div>
+                <strong style="font-size: 1.25rem; color: var(--success);">{{ score }}% ({{ correct_count }}/3 Correct)</strong>
+            </div>
+            <div>
+                <div style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">Risk Score Adjustment</div>
+                <strong style="font-size: 1.25rem; color: var(--accent-primary);">-20 pts (Remediated)</strong>
+            </div>
+        </div>
+
+        <p style="font-size: 0.8125rem; color: var(--text-muted); max-width: 480px; margin: 0 auto 2rem;">
+            Thank you for participating actively in our defensive security posture. Continuous vigilance transforms individual awareness into collective organizational safety.
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary" onclick="window.print()">
+                Print / Save Certificate
+            </button>
+            <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary">
+                Return to Security Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

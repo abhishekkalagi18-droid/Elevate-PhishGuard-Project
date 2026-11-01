@@ -1,0 +1,132 @@
+{% extends "dashboard/layout.html" %}
+
+{% block page_title %}Behavioral Analytics & Resilience Trends{% endblock %}
+
+{% block dashboard_content %}
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-label">Phish-Prone Baseline</span>
+            <span class="badge badge-danger">Click Rate</span>
+        </div>
+        <div class="metric-value">{{ metrics.phish_prone_rate }}%</div>
+        <div class="metric-sub">Historic peak: 32.4% (May 2026)</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-label">Threat Reporting Velocity</span>
+            <span class="badge badge-success">Defense Metric</span>
+        </div>
+        <div class="metric-value">{{ metrics.report_rate }}%</div>
+        <div class="metric-sub">Up 42.8% since baseline launch</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-label">Quiz Remediation</span>
+            <span class="badge badge-primary">Education</span>
+        </div>
+        <div class="metric-value">{{ metrics.training_rate }}%</div>
+        <div class="metric-sub">Clicked targets who completed awareness training</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-label">Total Drill Interactions</span>
+            <span class="badge badge-subtle">Audit Volume</span>
+        </div>
+        <div class="metric-value">{{ metrics.total_sent }}</div>
+        <div class="metric-sub">Tracked safe telemetry events</div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Timeline Trend -->
+    <div class="card">
+        <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.125rem;">Resilience Curve (6-Month Trend)</h3>
+            <p style="font-size: 0.8125rem; color: var(--text-secondary);">Tracking click reduction against proactive threat reports</p>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="analyticsTrendChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Department Comparison Bar Chart -->
+    <div class="card">
+        <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.125rem;">Departmental Vulnerability Index</h3>
+            <p style="font-size: 0.8125rem; color: var(--text-secondary);">Click rate vs threat report rate by department cohort</p>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="analyticsDeptChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Template Effectiveness Breakdown Table -->
+<div class="card">
+    <div style="margin-bottom: 1rem;">
+        <h3 style="font-size: 1.125rem;">Template Vulnerability Assessment</h3>
+        <p style="font-size: 0.8125rem; color: var(--text-secondary);">Evaluation of which psychological levers triggered employee interactions</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Scenario Name</th>
+                    <th>Category</th>
+                    <th>Difficulty</th>
+                    <th>Dispatched</th>
+                    <th>Clicked</th>
+                    <th>Reported</th>
+                    <th>Click Vulnerability</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ts in template_stats %}
+                <tr>
+                    <td><strong style="color: var(--text-primary);">{{ ts.name }}</strong></td>
+                    <td><span class="badge badge-subtle">{{ ts.category }}</span></td>
+                    <td>
+                        <span class="badge {% if ts.difficulty == 'Low' %}badge-success{% elif ts.difficulty == 'Medium' %}badge-warning{% else %}badge-danger{% endif %}">
+                            {{ ts.difficulty }}
+                        </span>
+                    </td>
+                    <td>{{ ts.total_sent }}</td>
+                    <td>
+                        <span style="color: {% if ts.clicked_count > 0 %}var(--danger){% else %}var(--text-muted){% endif %}; font-weight: 600;">
+                            {{ ts.clicked_count }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="color: {% if ts.reported_count > 0 %}var(--success){% else %}var(--text-muted){% endif %}; font-weight: 600;">
+                            {{ ts.reported_count }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="flex: 1; height: 6px; background-color: var(--border-subtle); border-radius: var(--radius-full); overflow: hidden;">
+                                <div style="width: {{ ts.click_rate }}%; height: 100%; background-color: {% if ts.click_rate > 25 %}var(--danger){% elif ts.click_rate > 10 %}var(--warning){% else %}var(--success){% endif %};"></div>
+                            </div>
+                            <span style="font-size: 0.75rem; font-weight: 600;">{{ ts.click_rate }}%</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block dashboard_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        PhishGuardCharts.initAnalyticsCharts();
+    });
+</script>
+{% endblock %}

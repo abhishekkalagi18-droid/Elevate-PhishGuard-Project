@@ -1,0 +1,203 @@
+{% extends "dashboard/layout.html" %}
+
+{% block page_title %}Campaign Telemetry Funnel{% endblock %}
+
+{% block dashboard_content %}
+<!-- Campaign Header Card -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.375rem;">
+                <h2 style="font-size: 1.5rem;">{{ campaign.name }}</h2>
+                <span class="badge {% if campaign.status == 'Active' %}badge-primary{% elif campaign.status == 'Completed' %}badge-success{% else %}badge-warning{% endif %}">
+                    {{ campaign.status }}
+                </span>
+                <span class="badge badge-subtle">Mode: {{ campaign.delivery_mode|upper }}</span>
+            </div>
+            <p style="font-size: 0.8125rem; color: var(--text-secondary);">
+                Template: <strong>{{ campaign.template_name }}</strong> (Difficulty: {{ campaign.difficulty }}) &nbsp;•&nbsp;
+                Started: {{ campaign.started_at or 'Just now' }}
+            </p>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <form method="POST" action="{{ url_for('dashboard.update_campaign_status', campaign_id=campaign.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% if campaign.status == 'Active' %}
+                    <input type="hidden" name="status" value="Completed">
+                    <button type="submit" class="btn btn-secondary btn-sm">Mark as Completed</button>
+                {% else %}
+                    <input type="hidden" name="status" value="Active">
+                    <button type="submit" class="btn btn-primary btn-sm">Reactivate Drill</button>
+                {% endif %}
+            </form>
+            <a href="{{ url_for('dashboard.campaigns') }}" class="btn btn-outline btn-sm">← Back to Campaigns</a>
+        </div>
+    </div>
+</div>
+
+<!-- Funnel Telemetry Breakdown -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <h3 style="font-size: 1.05rem; margin-bottom: 0.5rem;">Drill Telemetry Funnel</h3>
+    <p style="font-size: 0.8125rem; color: var(--text-secondary);">Conversion flow from safe simulated delivery through awareness completion</p>
+
+    <div class="funnel-container">
+        <div class="funnel-step">
+            <div class="funnel-count">{{ funnel.total }}</div>
+            <div class="funnel-label">Dispatched</div>
+            <div class="funnel-rate">100% Sent</div>
+        </div>
+
+        <div class="funnel-step">
+            <div class="funnel-count">{{ funnel.opened }}</div>
+            <div class="funnel-label">Opened Preview</div>
+            <div class="funnel-rate">{{ (funnel.opened / funnel.total * 100)|round(1) if funnel.total > 0 else 0 }}% Open Rate</div>
+        </div>
+
+        <div class="funnel-step" style="border-color: rgba(239, 68, 68, 0.3);">
+            <div class="funnel-count" style="color: var(--danger);">{{ funnel.clicked }}</div>
+            <div class="funnel-label">Clicked Link</div>
+            <div class="funnel-rate" style="color: var(--danger);">{{ funnel.click_rate }}% Phish-Prone</div>
+        </div>
+
+        <div class="funnel-step" style="border-color: rgba(16, 185, 129, 0.3);">
+            <div class="funnel-count" style="color: var(--success);">{{ funnel.reported }}</div>
+            <div class="funnel-label">Reported Threat</div>
+            <div class="funnel-rate" style="color: var(--success);">{{ funnel.report_rate }}% Defended</div>
+        </div>
+
+        <div class="funnel-step" style="border-color: rgba(37, 99, 235, 0.3);">
+            <div class="funnel-count" style="color: var(--accent-primary);">{{ funnel.trained }}</div>
+            <div class="funnel-label">Completed Quiz</div>
+            <div class="funnel-rate" style="color: var(--accent-primary);">{{ funnel.training_rate }}% Remediated</div>
+        </div>
+    </div>
+</div>
+
+<!-- Participant Targets Table with Live Simulation Controls -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+            <h3 style="font-size: 1.05rem;">Assigned Simulation Targets</h3>
+            <p style="font-size: 0.8125rem; color: var(--text-secondary);">
+                Test the simulation live: click <strong>Open In-Browser Email</strong> or trigger simulated participant events with one click.
+            </p>
+        </div>
+        <span class="badge badge-subtle">{{ targets|length }} Authorized Targets</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Participant</th>
+                    <th>Department</th>
+                    <th>Current Status</th>
+                    <th>Timestamps</th>
+                    <th>Interactive Simulation & Triggers</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in targets %}
+                <tr id="target-row-{{ t.id }}">
+                    <td>
+                        <strong style="color: var(--text-primary);">{{ t.first_name }} {{ t.last_name }}</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">{{ t.email }}</div>
+                    </td>
+                    <td>
+                        <span class="badge badge-subtle">{{ t.department }}</span>
+                    </td>
+                    <td>
+                        <span class="badge target-status-badge {% if t.status == 'Completed Training' %}badge-primary{% elif t.status == 'Reported' %}badge-success{% elif t.status == 'Clicked' %}badge-danger{% elif t.status == 'Opened' %}badge-info{% else %}badge-subtle{% endif %}">
+                            {{ t.status }}
+                        </span>
+                    </td>
+                    <td style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                        {% if t.sent_at %}<div>Sent: {{ t.sent_at }}</div>{% endif %}
+                        {% if t.clicked_at %}<div style="color: var(--danger);">Clicked: {{ t.clicked_at }}</div>{% endif %}
+                        {% if t.reported_at %}<div style="color: var(--success);">Reported: {{ t.reported_at }}</div>{% endif %}
+                        {% if t.trained_at %}<div style="color: var(--accent-primary);">Trained (Score: {{ t.quiz_score }}%)</div>{% endif %}
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            <!-- Open Simulated Webmail Client -->
+                            <a href="{{ url_for('simulation.preview_email', token=t.tracking_token) }}" target="_blank" class="btn btn-outline btn-sm" title="Open Simulated Email in Browser">
+                                ✉️ View Email
+                            </a>
+
+                            <!-- Instant Demo Simulation Triggers -->
+                            <button type="button" class="btn btn-outline btn-sm btn-trigger-action"
+                                    data-campaign-id="{{ campaign.id }}" data-target-id="{{ t.id }}" data-action="open"
+                                    title="Simulate participant opening the email">
+                                Open
+                            </button>
+
+                            <button type="button" class="btn btn-outline btn-sm btn-trigger-action"
+                                    data-campaign-id="{{ campaign.id }}" data-target-id="{{ t.id }}" data-action="click"
+                                    title="Simulate participant clicking the phishing link">
+                                Click
+                            </button>
+
+                            <button type="button" class="btn btn-outline btn-sm btn-trigger-action"
+                                    data-campaign-id="{{ campaign.id }}" data-target-id="{{ t.id }}" data-action="report"
+                                    title="Simulate participant reporting the phishing drill">
+                                Report
+                            </button>
+
+                            <button type="button" class="btn btn-outline btn-sm btn-trigger-action"
+                                    data-campaign-id="{{ campaign.id }}" data-target-id="{{ t.id }}" data-action="train"
+                                    title="Simulate participant passing awareness quiz">
+                                Pass Quiz
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No targets assigned.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Audit Trail Events Log -->
+<div class="card">
+    <h3 style="font-size: 1.05rem; margin-bottom: 0.5rem;">Audit Trail & Interaction Telemetry</h3>
+    <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">Immutable audit log of safe simulation events recorded for this drill</p>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Event Type</th>
+                    <th>Participant</th>
+                    <th>Details & Telemetry</th>
+                    <th>Origin IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ev in events %}
+                <tr>
+                    <td style="font-size: 0.75rem; color: var(--text-muted);">{{ ev.created_at }}</td>
+                    <td>
+                        <span class="badge {% if ev.event_type == 'phish_reported' %}badge-success{% elif ev.event_type == 'link_clicked' %}badge-danger{% elif ev.event_type == 'quiz_completed' %}badge-primary{% else %}badge-subtle{% endif %}">
+                            {{ ev.event_type }}
+                        </span>
+                    </td>
+                    <td>{{ ev.first_name }} {{ ev.last_name }} ({{ ev.email }})</td>
+                    <td style="font-size: 0.8125rem; color: var(--text-secondary);">{{ ev.details or 'Standard simulation telemetry' }}</td>
+                    <td style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-muted);">{{ ev.ip_address or 'Internal' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No telemetry recorded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
