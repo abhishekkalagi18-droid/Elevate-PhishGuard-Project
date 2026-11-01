@@ -6,7 +6,7 @@
 [![Chart.js](https://img.shields.io/badge/Visualizations-Chart.js%204.x-orange.svg)](https://www.chartjs.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**PhishGuard** is a minimalist, enterprise-grade ethical phishing simulation and security-awareness training platform. Engineered for Chief Information Security Officers (CISOs), SecOps professionals, and IT administrators, PhishGuard builds measurable, long-term human resilience through constructive, psychological-safety-focused simulations and instantaneous teachable moments.
+**PhishGuard** is a minimalist, enterprise-grade ethical phishing simulation and security-awareness training platform. The application is implemented with Python, Flask, SQLite, HTML, CSS, and JavaScript, with Chart.js for data visualizations. It provides a controlled environment for conducting authorized phishing-awareness exercises and reviewing participant learning outcomes. Engineered for Chief Information Security Officers (CISOs), SecOps professionals, and IT administrators, PhishGuard builds measurable, long-term human resilience through constructive, psychological-safety-focused simulations and instantaneous teachable moments.
 
 ---
 
@@ -119,7 +119,7 @@ Follow these exact commands in **Windows PowerShell** to install dependencies, r
 
 ### 1. Navigate to the project directory
 ```powershell
-cd "C:\Users\Abhishek\.gemini\antigravity\scratch\phishguard"
+cd phishguard
 ```
 
 ### 2. Install Python Dependencies
@@ -154,7 +154,7 @@ For immediate evaluation in local development mode, the database is pre-seeded w
 | **Password** | `PhishGuard2026!` |
 | **Role** | `admin` |
 
-*(Credentials and secrets can be customized in `.env`)*
+These are demo credentials for local evaluation only. Change the default password before using the application beyond a local demonstration. Never publish real passwords, API keys, SMTP credentials, or other secrets in the repository.
 
 ---
 
